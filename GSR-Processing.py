@@ -10,51 +10,47 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import re
 
-file = 'VREED Data\\05 ECG-GSR Data\\01 ECG-GSR Data (Pre-Processed)\\101_ECG_GSR_PreProcessed.dat'
+
 dir = 'VREED Data\\05 ECG-GSR Data\\01 ECG-GSR Data (Pre-Processed)\\'
 file_suffix = '_ECG_GSR_PreProcessed.dat'
-files = []
-df = pd.DataFrame()
-participant_id = 101
-
-
 output_file = 'GSR_all.csv'
+
+files = []
+participant_ids = []
+df = pd.DataFrame()
 
 # remove file if it exists
 if os.path.exists(output_file):
     os.remove(output_file)
 
+first = True
 
-for i in range(101, 134):
-    files.append(dir + str(i) + file_suffix)
-
-all_rows = []
-
-for f in files:
+for participant_id in range(101, 134):
+    f = f"{dir}{participant_id}{file_suffix}"
     print(' file: ', f)
-    #the data appears to have been pickled, so we use pickle to load it
-    #I verified this previously by printing the first few bytes of the file (which showed pickle header)
+    
+    #participant_ids.append(str(i))
     data = pickle.load(open(f, 'rb'))
 
-    #the clips we will iterate through (0-11) 
-
-    for clip in range(len(data['Data'])):  
+    for clip in range(len(data['Data'])):
         clip_data = np.array(data['Data'][clip]) # collect signal array from clip X as numpy array
         #get the first (GSR) column and all rows into signal array
         GSR_signal = clip_data[:, 0]  # in numpy, : means all rows, 0 means first column
+        label = data['Labels'][clip]
+
+        df_clip = pd.DataFrame({
+            'GSR': GSR_signal,
+            'Clip': clip,
+            'Participant': participant_id,
+            'Label': label
+        })
         
-        df = pd.DataFrame({'GSR': GSR_signal, 'Clip': clip, 'Participant': participant_id})
+        print(' Participant: ', participant_id, 'Label: ', label, ' Clip: ', clip, ' GSR length: ', len(GSR_signal))
+        df_clip.to_csv(output_file, mode='a', header=first, index=False)
+        first = False
 
-        df.to_csv(output_file, mode='a', header=not os.path.exists(output_file), index=False)
 
+    
 
-''' 
-plt.figure(figsize=(10,4))
-plt.plot(GSR_signal)
-plt.title("GSR Signal for 101 - Clip " + str(clip))
-plt.xlabel("Samples")
-plt.ylabel("GSR")
-plt.show() '''
-
-#df = pd.DataFrame(GSR_signal, columns=['GSR'])
