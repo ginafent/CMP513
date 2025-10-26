@@ -6,7 +6,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 dir = 'VREED Data\\05 ECG-GSR Data\\01 ECG-GSR Data (Pre-Processed)\\'
 file_suffix = '_ECG_GSR_PreProcessed.dat'
-output_pdf = 'GSR_by_Label.pdf'
+output_pdf = 'GSR_by_Clip.pdf'
 
 # Remove old PDF if exists
 if os.path.exists(output_pdf):
@@ -20,10 +20,9 @@ label_names = {
     4: "Baseline"
 }
 
-# Prepare dictionary to collect signals by label
-label_data = {k: [] for k in range(5)}
+# Collect GSR signals grouped by clip
+clip_data_dict = {i: [] for i in range(13)}  # up to 13 clips (some have 12, some 13)
 
-# Gather all data
 for i in range(101, 134):
     f = os.path.join(dir, f"{i}{file_suffix}")
     if not os.path.exists(f):
@@ -37,23 +36,23 @@ for i in range(101, 134):
         clip_data = np.array(data['Data'][clip])
         GSR_signal = clip_data[:, 0]
         label = labels[clip]
-        label_data[label].append((i, clip, GSR_signal))  # (participant ID, clip number, signal)
+        clip_data_dict[clip].append((i, label, GSR_signal))
 
-# Create PDF
+# Create a PDF — one page per clip
 with PdfPages(output_pdf) as pdf:
-    for label, entries in label_data.items():
+    for clip, entries in clip_data_dict.items():
         if not entries:
             continue
 
         plt.figure(figsize=(10, 5))
-        plt.title(f"Label {label}: {label_names[label]}")
+        plt.title(f"Clip {clip} — Label {entries[0][1]}: {label_names[entries[0][1]]}")
         plt.xlabel("Sample")
         plt.ylabel("GSR Signal")
 
-        for participant_id, clip, signal in entries:
-            plt.plot(signal, alpha=0.4, linewidth=0.5, label=f"P{participant_id}-C{clip}")
+        for participant_id, label, signal in entries:
+            plt.plot(signal, alpha=0.4, linewidth=0.5, label=f"P{participant_id}")
 
-        # Optional: legend only if <10 traces (avoids clutter)
+        # Optional: show legend only for few participants to reduce clutter
         if len(entries) < 10:
             plt.legend(fontsize=6)
 
@@ -61,4 +60,4 @@ with PdfPages(output_pdf) as pdf:
         pdf.savefig()
         plt.close()
 
-print(f"All label-based plots saved to {output_pdf}")
+print(f"All clip-based plots saved to {output_pdf}")
