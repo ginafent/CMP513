@@ -8,6 +8,8 @@ dir = 'VREED Data\\05 ECG-GSR Data\\01 ECG-GSR Data (Pre-Processed)\\'
 file_suffix = '_ECG_GSR_PreProcessed.dat'
 output_pdf = 'GSR_by_Clip.pdf'
 
+#NOTE: The clips are all different lengths, so do not compare visually
+
 # Remove old PDF if exists
 if os.path.exists(output_pdf):
     os.remove(output_pdf)
