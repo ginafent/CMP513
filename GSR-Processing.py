@@ -10,6 +10,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 import re
 
 
@@ -33,6 +34,10 @@ for participant_id in range(101, 134):
     
     #participant_ids.append(str(i))
     data = pickle.load(open(f, 'rb'))
+
+    if len(data['Data']) < 12:
+     print(f"Participant {participant_id} has {len(data['Data'])} clips — skippinge")
+     continue
 
     for clip in range(len(data['Data'])):
         clip_data = np.array(data['Data'][clip]) # collect signal array from clip X as numpy array
