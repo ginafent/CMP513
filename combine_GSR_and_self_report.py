@@ -1,4 +1,4 @@
-#This file is to combine the GSR data with the self report data so it is suitable for SPS
+#This file is to extract the GSR features
 
 '''
 We want:
@@ -89,6 +89,8 @@ df_features = pd.DataFrame(gsr_features)
 df_features['Label_Name'] = df_features['Label'].map(label_names)
 df_features.to_csv(output_file, index=False)
 print("Saved ", output_file)
+
+
 
 
 
