@@ -28,3 +28,4 @@ merged_df.to_csv("Merged_GSR_POST.csv", index=False)
 
 print("Merged dataset shape:", merged_df.shape)
 print(merged_df[['Participant', 'GSR Mean', 'Clip', 'Num_Code', 'Quad_Cat']].head())
+
