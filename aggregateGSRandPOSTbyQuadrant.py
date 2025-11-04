@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 
-# Assume your GSR features CSV has columns:
-# 'Participant', 'Clip', 'Label', 'GSR_Mean', 'GSR_SD'
 gsr_df = pd.read_csv('Combined_Data.csv')
 
 # Aggregate mean GSR per Label (quadrant) per participant
