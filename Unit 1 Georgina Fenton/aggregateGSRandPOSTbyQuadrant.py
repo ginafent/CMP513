@@ -1,18 +1,19 @@
 import pandas as pd
 import numpy as np
 
-gsr_df = pd.read_csv('Combined_Data.csv')
+gsr_df = pd.read_csv('GSR_withChange.csv')
 
-# Aggregate mean GSR per Label (quadrant) per participant
+
 gsr_agg = gsr_df.groupby(['Participant', 'Label']).agg({
     'GSR Mean': 'mean',
-    'GSR SD': 'mean'  # or 'std' if you prefer
+    'GSR SD': 'mean',
+    'GSR Change': 'mean'
 }).reset_index()
 
-post_df = pd.read_excel("VREED Data/03 Self-Reported Questionnaires/02 Post Exposure Ratings.xlsx")  # your POST CSV
-# Example columns: ID, Quad_Cat, POST_Valence, POST_Arousal, etc.
+post_df = pd.read_excel("VREED Data/03 Self-Reported Questionnaires/02 Post Exposure Ratings.xlsx")
 
 # Aggregate mean self-report per quadrant per participant
+#Note, baseline gets dropped since it wasn't included in the POST data
 post_agg = post_df.groupby(['ID', 'Quad_Cat']).agg({
     'POST_Valence': 'mean',
     'POST_Arousal': 'mean',
@@ -27,4 +28,4 @@ merged_agg = pd.merge(
     how='inner'
 )
 
-merged_agg.to_csv("merged_agg.csv", index=False)
+merged_agg.to_csv("GSR_Post_Data_Merged.csv", index=False)
